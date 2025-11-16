@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8
+    container_name: playlist-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: playlist_db
+      MYSQL_USER: playlist_user
+      MYSQL_PASSWORD: playlist_pass
+    volumes:
+      - playlist-mysql-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - playlist-net
+
+  app:
+    build: .
+    container_name: playlist-go
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: playlist_user
+      DB_PASSWORD: playlist_pass
+      DB_NAME: playlist_db
+    ports:
+      - "8080:8080"
+    networks:
+      - playlist-net
+
+volumes:
+  playlist-mysql-data:
+
+networks:
+  playlist-net:
